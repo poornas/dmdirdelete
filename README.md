@@ -1,6 +1,7 @@
 ### Delete excess delete markers for versioned directory objects
 
-This tool handles only excess delete markers for dir object entries
+This tool handles only excess delete markers for dir object entries. If topmost entry in the version stack is a delete marker for directory object, delete all non current versions except the top most delete marker.
+The top most delete marker is expected to be cleaned up by lifecycle.
 
 #### Remove duplicate delete markers on a prefix "prefix/to/em7" and delete extra delete markers
 
@@ -35,5 +36,4 @@ mc ls minio/bucket/prefix/to -r --versions
 [2022-03-19 15:58:28 PDT]     0B STANDARD 7b081827-bb79-463a-9615-df4580594523 v2 DEL em6/
 [2022-03-19 15:58:01 PDT]     0B STANDARD a4ed811f-96c2-4efb-9d51-33b5e178fd9b v1 PUT em6/
 [2022-03-19 15:58:33 PDT]     0B STANDARD 85113983-b581-4fb3-a371-c7025c0e93b0 v2 DEL em7/
-[2022-03-19 15:58:09 PDT]     0B STANDARD d99a91d1-b6ca-4041-a7bf-4c5452822f1b v1 PUT em7/
 ```

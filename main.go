@@ -104,11 +104,12 @@ func main() {
 		}
 	}
 	ctx := context.Background()
-	var prev, older minio.ObjectInfo
+	//var prev, older minio.ObjectInfo
 	// Send object names that are needed to be removed to objectsCh
 	markDelete := 0
 	currPrefix := ""
 	listCnt := 0
+	var markDel minio.ObjectInfo
 	go func() {
 		defer close(objectsCh)
 		// List all objects from a bucket-name with a matching prefix.
@@ -118,15 +119,14 @@ func main() {
 				continue
 			}
 			if strings.HasSuffix(object.Key, "/") {
-				if isDeleteMarkerOfSameDirObj(object, prev) {
-					sendForDeleteFn(ctx, prev)
-					markDelete++
-				} else if isDeleteMarkerOfSameDirObj(older, prev) && isDeleteMarkerOfSameDirObj(prev, object) {
-					sendForDeleteFn(ctx, older)
+				if object.IsDeleteMarker && object.IsLatest {
+					markDel = object
+					continue
+				}
+				if object.Key == markDel.Key {
+					sendForDeleteFn(ctx, object)
 					markDelete++
 				}
-				older = prev
-				prev = object
 			}
 			listCnt++
 			if strings.HasSuffix(object.Key, "/") {
