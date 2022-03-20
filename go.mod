@@ -1,4 +1,4 @@
-module dmdirdelete
+module delnoncurrent
 
 go 1.17
 

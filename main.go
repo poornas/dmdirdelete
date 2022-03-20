@@ -119,7 +119,7 @@ func main() {
 				continue
 			}
 			if strings.HasSuffix(object.Key, "/") {
-				if object.IsDeleteMarker && object.IsLatest {
+				if object.IsLatest {
 					markDel = object
 					continue
 				}
@@ -133,7 +133,7 @@ func main() {
 				currPrefix = object.Key
 			}
 			if listCnt%1000 == 0 {
-				log.Println("Listing at prefix: "+currPrefix+" Total listed:", listCnt, " # excess delete markers deleted", markDelete)
+				log.Println("Listing at prefix: "+currPrefix+" Total listed:", listCnt, " # older versions of empty directories deleted", markDelete)
 			}
 		}
 
@@ -142,10 +142,6 @@ func main() {
 	for e := range errorCh {
 		fmt.Println("Failed to remove " + e.ObjectName + e.VersionID + ", error: " + e.Err.Error())
 	}
-	log.Println(bucket+"/"+prefix, " Total listed :", listCnt, " # excess delete markers deleted=", markDelete)
+	log.Println(bucket+"/"+prefix, " Total listed :", listCnt, " # older versions of empty directories deleted=", markDelete)
 
-}
-
-func isDeleteMarkerOfSameDirObj(o1, o2 minio.ObjectInfo) bool {
-	return o1.Key == o2.Key && o1.IsDeleteMarker && o2.IsDeleteMarker && strings.HasSuffix(o1.Key, "/")
 }
