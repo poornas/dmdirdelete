@@ -41,7 +41,7 @@ func main() {
 	flag.StringVar(&accessKey, "access-key", "Q3AM3UQ867SPQQA43P2F", "S3 Access Key")
 	flag.StringVar(&secretKey, "secret-key", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG", "S3 Secret Key")
 	flag.StringVar(&bucket, "bucket", "", "Select a specific bucket")
-	flag.StringVar(&prefix, "prefix", "", "Select a prefix")
+	flag.StringVar(&prefix, "object", "", "Select a object")
 	flag.BoolVar(&debug, "debug", false, "Prints HTTP network calls to S3 endpoint")
 	flag.BoolVar(&fake, "fake", false, "Do a dry run")
 
@@ -60,7 +60,7 @@ func main() {
 	}
 
 	if bucket == "" && prefix != "" {
-		log.Fatalln("--prefix is specified without --bucket.")
+		log.Fatalln("--object is specified without --bucket.")
 	}
 
 	u, err := url.Parse(endpoint)
@@ -117,6 +117,9 @@ func main() {
 			if object.Err != nil {
 				log.Fatalln("LIST error:", object.Err)
 				continue
+			}
+			if object.Key != prefix {
+				return
 			}
 			if strings.HasSuffix(object.Key, "/") {
 				if object.IsLatest {
